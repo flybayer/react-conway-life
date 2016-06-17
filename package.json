@@ -9,9 +9,6 @@
       "react"
     ]
   },
-  "directories": {
-    "test": "tests"
-  },
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.10.1",
@@ -28,7 +25,7 @@
   "scripts": {
     "build": "browserify ./src/index.jsx -o ./public/index.js -t babelify",
     "watch": "watchify ./src/index.jsx -o ./public/index.js -t babelify -v",
-    "test": "babel-node tests/*.js | faucet"
+    "test": "babel-node test/*.js | faucet"
   },
   "author": "Brandon Bayer",
   "license": "ISC",
