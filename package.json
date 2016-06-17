@@ -14,20 +14,21 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "babel-cli": "^6.10.1",
     "babel-preset-es2015": "6.9.0",
     "babel-preset-react": "6.5.0",
     "babelify": "7.3.0",
     "browserify": "13.0.1",
+    "faucet": "0.0.1",
     "react": "15.1.0",
     "react-dom": "15.1.0",
-    "watchify": "3.7.0",
-    "faucet": "0.0.1",
-    "tape": "^4.5.1"
+    "tape": "^4.5.1",
+    "watchify": "3.7.0"
   },
   "scripts": {
     "build": "browserify ./src/index.jsx -o ./public/index.js -t babelify",
     "watch": "watchify ./src/index.jsx -o ./public/index.js -t babelify -v",
-    "test": "babel-node 'tests/**/*.js' | faucet"
+    "test": "babel-node tests/*.js | faucet"
   },
   "author": "Brandon Bayer",
   "license": "ISC",
