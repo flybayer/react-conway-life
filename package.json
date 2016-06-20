@@ -27,7 +27,7 @@
     "build": "browserify ./src/index.jsx -o ./public/index.js -t babelify",
     "watch": "watchify ./src/index.jsx -o ./public/index.js -t babelify -v",
     "twatch": "nodemon --quiet --delay 1 -e js,jsx -x 'echo \"\n=====================================\n\"; babel-node test/*.js | faucet'",
-    "test": "babel-node test/*.js | faucet"
+    "test": "babel-node test/*.js"
   },
   "author": "Brandon Bayer",
   "license": "ISC",
