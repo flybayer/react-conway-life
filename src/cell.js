@@ -1,14 +1,14 @@
 export default function cell() {
   let _alive = false;
   let _neighbors = {
-    top: null,
-    topRight: null,
-    right: null,
-    bottomRight: null,
-    bottom: null,
-    bottomLeft: null,
-    left: null,
-    topLeft: null
+    north: null,
+    northEast: null,
+    east: null,
+    southEast: null,
+    south: null,
+    southWest: null,
+    west: null,
+    northWest: null
   };
 
   const passesRule2 = (isAlive, livingNeighbors) => (
