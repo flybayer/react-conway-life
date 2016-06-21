@@ -54,7 +54,11 @@ export default function cell() {
     numberOfLivingNeighbors: numberOfLivingNeighbors,
     willLive: willLive,
     setNeighbors: setNeighbors,
-    getNeighbors() { return Object.assign({}, _neighbors); }
+    getNeighbors() { return Object.assign({}, _neighbors); },
+    judgement() {
+      _alive = willLive();
+      return this;
+    }
   };
 
   return publicApi;

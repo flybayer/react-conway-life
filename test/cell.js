@@ -89,6 +89,22 @@ test('cell neighbor direct mutation', assert => {
   assert.end();
 });
 
+test('cell neighbor replacement', assert => {
+  const msg = 'should be able to replace a neighbor'
+
+  const newCell = cell();
+  const neighbors = { top: cell() };
+  const newNeighbors = { top: cell() };
+
+  newCell.setNeighbors(neighbors).setNeighbors(newNeighbors);
+
+  const actual = newCell.getNeighbors().top;
+  const expected = newNeighbors.top;
+
+  assert.same(actual, expected, msg);
+  assert.end();
+});
+
 test('number of living neighbors', assert => {
   const msg = 'should have 3 living neighbors'
 
@@ -126,7 +142,7 @@ test('rule 1a', assert => {
   };
   const newCell = cell().beAlive().setNeighbors(neighbors);
 
-  const actual = newCell.willLive();
+  const actual = newCell.judgement().isAlive();
   const expected = false;
 
   assert.same(actual, expected, msg);
@@ -148,7 +164,7 @@ test('rule 1b', assert => {
   };
   const newCell = cell().beAlive().setNeighbors(neighbors);
 
-  const actual = newCell.willLive();
+  const actual = newCell.judgement().isAlive();
   const expected = false;
 
   assert.same(actual, expected, msg);
@@ -170,7 +186,7 @@ test('rule 2a', assert => {
   };
   const newCell = cell().beAlive().setNeighbors(neighbors);
 
-  const actual = newCell.willLive();
+  const actual = newCell.judgement().isAlive();
   const expected = true;
 
   assert.same(actual, expected, msg);
@@ -192,7 +208,7 @@ test('rule 2b', assert => {
   };
   const newCell = cell().beAlive().setNeighbors(neighbors);
 
-  const actual = newCell.willLive();
+  const actual = newCell.judgement().isAlive();
   const expected = true;
 
   assert.same(actual, expected, msg);
@@ -214,7 +230,7 @@ test('rule 3', assert => {
   };
   const newCell = cell().beAlive().setNeighbors(neighbors);
 
-  const actual = newCell.willLive();
+  const actual = newCell.judgement().isAlive();
   const expected = false;
 
   assert.same(actual, expected, msg);
@@ -236,7 +252,7 @@ test('rule 4', assert => {
   };
   const newCell = cell().setNeighbors(neighbors);
 
-  const actual = newCell.willLive();
+  const actual = newCell.judgement().isAlive();
   const expected = true;
 
   assert.same(actual, expected, msg);
