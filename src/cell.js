@@ -1,8 +1,32 @@
 export const MAX_IMMEDIATE_NEIGHBORS = 8;
 
+const CARDINALS = {
+  east:  ["east", "south", "west", "north"],
+  south: ["south", "west", "north", "east"],
+  west:  ["west", "north", "east", "south"],
+  north: ["north", "east", "south", "west"]
+};
+const INTERCARDINALS = {
+  east:  ["southEast", "southWest", "northWest", "northEast"],
+  south: ["southWest", "northWest", "northEast", "southEast"],
+  west:  ["northWest", "northEast", "southEast", "southWest"],
+  north: ["northEast", "southEast", "southWest", "northWest"]
+}
+
+const passesRule2 = (isAlive, livingNeighbors) => (
+  //Rules 1 & 3 are just clarifications of rule 3
+  //Only passes if alive and has 2 or 3 living neighbors
+  isAlive && (livingNeighbors === 2 || livingNeighbors === 3)
+);
+const passesRule4 = (isAlive, livingNeighbors) => (
+  //Only passes if dead and has 3 living neighbors
+  !isAlive && livingNeighbors === 3
+);
+const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args));
+
 export function cell() {
   let _alive = false;
-  let _neighbors = new Map([
+  const _neighbors = new Map([
     ["north", null],
     ["northEast", null],
     ["east", null],
@@ -12,17 +36,6 @@ export function cell() {
     ["west", null],
     ["northWest", null]
   ]);
-
-  const passesRule2 = (isAlive, livingNeighbors) => (
-    //Rules 1 & 3 are just clarifications of rule 3
-    //Only passes if alive and has 2 or 3 living neighbors
-    isAlive && (livingNeighbors === 2 || livingNeighbors === 3)
-  );
-  const passesRule4 = (isAlive, livingNeighbors) => (
-    //Only passes if dead and has 3 living neighbors
-    !isAlive && livingNeighbors === 3
-  );
-  const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args));
 
   function numberOfNeighbors() {
     let result = 0;
@@ -53,28 +66,39 @@ export function cell() {
     let cellsToCreate = 0;
     let numCreated = 0;
 
-    if (!options.direction) options.direction = "east";
+    if (!options.startingDirection) options.startingDirection = "east";
 
     if (options.immediate) {
       cellsToCreate = options.immediate;
-      //
-      // //TODO - create immediate neighbors in proper direction
-      if (cellsToCreate > 0 && !_neighbors.get(options.direction)) {
-        _neighbors.set(options.direction, cell());
+      if (cellsToCreate == 0) return numCreated;
+
+      for (let direction of CARDINALS[options.startingDirection]) {
+        _neighbors.set(direction, cell());
         cellsToCreate--;
         numCreated++;
+        if (cellsToCreate == 0) return numCreated;
       }
-      // linkNeighbors();
+
+      for (let direction of INTERCARDINALS[options.startingDirection]) {
+        _neighbors.set(direction, cell());
+        cellsToCreate--;
+        numCreated++;
+        if (cellsToCreate == 0) return numCreated;
+      }
+
+      // TODO: linkNeighbors();
     }
+
     if (options.extended) {
       // cellsToCreate = options.extended;
       //
       // //TODO - create extended neighbors by in proper direction
-      // cellsToCreate -= _neighbors[options.direction].create({
+      // cellsToCreate -= _neighbors[options.startingDirection].create({
       //   immediate: ,
-      //   direction: options.direction
+      //   startingDirection: options.startingDirection
       // });
-      // linkNeighbors();
+
+      // TODO: linkNeighbors();
     }
 
     return numCreated;
