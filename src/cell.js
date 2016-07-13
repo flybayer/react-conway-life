@@ -26,30 +26,33 @@ const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args)
 
 export function cell() {
   let _alive = false;
-  const _neighbors = new Map([
-    ["north", null],
-    ["northEast", null],
-    ["east", null],
-    ["southEast", null],
-    ["south", null],
-    ["southWest", null],
-    ["west", null],
-    ["northWest", null]
-  ]);
+
+  //TODO CHANGE _NEIGHBORS BACK TO OBJECT
+  const _neighbors = {
+    north: null,
+    northEast: null,
+    east: null,
+    southEast: null,
+    south: null,
+    southWest: null,
+    west: null,
+    northWest: null
+  };
+  Object.seal(_neighbors);
 
   function numberOfNeighbors() {
     let result = 0;
-    for (let neighbor of _neighbors.values()) {
-      if (!neighbor) continue;
+    for (let neighbor in _neighbors) {
+      if (!_neighbors[neighbor]) continue;
       result++;
     }
     return result;
   }
   function numberOfLivingNeighbors() {
     let livingNeighbors = 0;
-    for (let neighbor of _neighbors.values()) {
-      if (!neighbor) continue;
-      if (neighbor.isAlive()) livingNeighbors++;
+    for (let neighbor in _neighbors) {
+      if (!_neighbors[neighbor]) continue;
+      if (_neighbors[neighbor].isAlive()) livingNeighbors++;
     }
     return livingNeighbors;
   }
@@ -58,7 +61,7 @@ export function cell() {
   }
   function valid(neighbors) {
     for (let key in neighbors) {
-      if (!_neighbors.has(key)) return false;
+      if (!(key in _neighbors)) return false;
     }
     return true;
   }
@@ -73,14 +76,16 @@ export function cell() {
       if (cellsToCreate == 0) return numCreated;
 
       for (let direction of CARDINALS[options.startingDirection]) {
-        _neighbors.set(direction, cell());
+        if (_neighbors[direction]) continue;
+        _neighbors[direction] = cell();
         cellsToCreate--;
         numCreated++;
         if (cellsToCreate == 0) return numCreated;
       }
 
       for (let direction of INTERCARDINALS[options.startingDirection]) {
-        _neighbors.set(direction, cell());
+        if (_neighbors[direction]) continue;
+        _neighbors[direction] = cell();
         cellsToCreate--;
         numCreated++;
         if (cellsToCreate == 0) return numCreated;
@@ -88,8 +93,7 @@ export function cell() {
 
       // TODO: linkNeighbors();
     }
-
-    if (options.extended) {
+    else if (options.extended) {
       // cellsToCreate = options.extended;
       //
       // //TODO - create extended neighbors by in proper direction
@@ -106,7 +110,7 @@ export function cell() {
   function setNeighbors(newNeighbors) {
     if (!valid(newNeighbors)) throw new Error("invalid neighbors!");
     for (let neighbor in newNeighbors) {
-      _neighbors.set(neighbor, newNeighbors[neighbor]);
+      _neighbors[neighbor] = newNeighbors[neighbor];
     }
     return this;
   }
@@ -122,13 +126,7 @@ export function cell() {
     willLive: willLive,
     create: create,
     setNeighbors: setNeighbors,
-    getNeighbors() {
-      const result = {};
-      for (let [neighborKey, neighborValue] of _neighbors) {
-        result[neighborKey] = neighborValue;
-      }
-      return result;
-    },
+    getNeighbors() { return Object.assign({}, _neighbors); },
     judgement() {
       _alive = willLive();
       return this;
