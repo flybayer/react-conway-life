@@ -165,6 +165,11 @@ export default function testCell() {
     assert.end();
   });
 
+
+  // -------------
+  // PASSING RULES
+  // -------------
+
   test('rule 1a', assert => {
     const msg = 'live cell with 0 live neighbors should die';
 
@@ -360,15 +365,23 @@ export default function testCell() {
     assert.end();
   });
 
-  // test('immediate neighbor linking', assert => {
-  //   const msg = ''
-  //
-  //   const actual = true;
-  //   const expected = true;
-  //
-  //   assert.same(actual, expected, msg);
-  //   assert.end();
-  // });
+  test('immediate neighbor linking', assert => {
+    const msg = 'should link all combinations of 4 cardinal neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: 4});
+
+    const actual =
+      newCell.getNeighbors().north.getNeighbors().south === newCell &&
+      newCell.getNeighbors().east.getNeighbors().west === newCell &&
+      newCell.getNeighbors().south.getNeighbors().north === newCell &&
+      newCell.getNeighbors().west.getNeighbors().east === newCell;
+    // TODO add diagonals
+    const expected = true;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
 
   // test('What are you testing?', assert => {
   //   const msg = 'what should it do?';

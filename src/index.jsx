@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import cell from './cell';
+import { cell } from './cell';
 
 window.aCell = cell();
+window.cell = cell;
 
 const Cell = (props) => (
   <div

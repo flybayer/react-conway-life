@@ -12,6 +12,16 @@ const INTERCARDINALS = {
   west:  ["northWest", "northEast", "southEast", "southWest"],
   north: ["northEast", "southEast", "southWest", "northWest"]
 }
+const OPPOSITE_DIRECTIONS = {
+  north: 'south',
+  northEast: 'southWest',
+  east: 'west',
+  southEast: 'northWest',
+  south: 'north',
+  southWest: 'northEast',
+  west: 'east',
+  northWest: 'southEast'
+}
 
 const passesRule2 = (isAlive, livingNeighbors) => (
   //Rules 1 & 3 are just clarifications of rule 3
@@ -80,7 +90,10 @@ export function cell() {
         _neighbors[direction] = cell();
         cellsToCreate--;
         numCreated++;
-        if (cellsToCreate == 0) return numCreated;
+        if (cellsToCreate == 0) {
+          this.linkNeighbors();
+          return numCreated;
+        }
       }
 
       for (let direction of INTERCARDINALS[options.startingDirection]) {
@@ -88,10 +101,11 @@ export function cell() {
         _neighbors[direction] = cell();
         cellsToCreate--;
         numCreated++;
-        if (cellsToCreate == 0) return numCreated;
+        if (cellsToCreate == 0) {
+          this.linkNeighbors();
+          return numCreated;
+        }
       }
-
-      // TODO: linkNeighbors();
     }
     else if (options.extended) {
       // cellsToCreate = options.extended;
@@ -114,6 +128,20 @@ export function cell() {
     }
     return this;
   }
+  function linkNeighbors() {
+    this.linkNeighborsBackToThis();
+  }
+  function linkNeighborsBackToThis() {
+    for (let direction in _neighbors) {
+      if (_neighbors[direction] === null) continue;
+      // console.log('= linking ' + direction);
+      // console.log('===== before: ' + JSON.stringify(_neighbors[direction].getNeighbors()));
+      _neighbors[direction].setNeighbors({
+        [OPPOSITE_DIRECTIONS[direction]]: this
+      });
+      // console.log('===== after:  ' + JSON.stringify(_neighbors[direction].getNeighbors()));
+    }
+  }
 
   const publicApi = {
     isAlive() { return _alive; },
@@ -130,7 +158,9 @@ export function cell() {
     judgement() {
       _alive = willLive();
       return this;
-    }
+    },
+    linkNeighbors: linkNeighbors,
+    linkNeighborsBackToThis: linkNeighborsBackToThis
   };
 
   return publicApi;
