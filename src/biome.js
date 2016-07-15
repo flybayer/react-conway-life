@@ -7,19 +7,13 @@ export default function biome(cellsToCreate) {
   if (cellsToCreate > 0) {
     _rootCell = cell();
     _totalCreated++;
+    cellsToCreate--;
 
-    let numCreated = _rootCell.create({
-      immediate: cellsToCreate - 1,
-      direction: "east"
-    });
-    _totalCreated += numCreated;
-
-    if (cellsToCreate - _totalCreated > 0) {
-      numCreated = _rootCell.create({
-        extended: cellsToCreate - _totalCreated,
-        direction: "east"
+    if (cellsToCreate > 0) {
+      _totalCreated += _rootCell.create({
+        cellsToCreate,
+        startingDirection: "east"
       });
-      _totalCreated += numCreated;
     }
   }
 

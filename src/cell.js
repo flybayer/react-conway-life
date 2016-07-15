@@ -36,8 +36,6 @@ const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args)
 
 export function cell() {
   let _alive = false;
-
-  //TODO CHANGE _NEIGHBORS BACK TO OBJECT
   const _neighbors = {
     north: null,
     northEast: null,
@@ -77,15 +75,32 @@ export function cell() {
   }
   function create({
     startingDirection = "east",
-    immediate = false,
-    extended = false
+    cellsToCreate = 0,
+    immediate = 0,
+    extended = 0
   } = {}) {
-    let cellsToCreate = 0;
     let numCreated = 0;
 
-    if (immediate) {
+    if (cellsToCreate > 0) {
+      // Create as many immediate neighbors as possible
+      numCreated += this.create({
+        immediate: cellsToCreate,
+        startingDirection
+      });
+      cellsToCreate -= numCreated;
+
+      // If still more cells to create, recursivly create extended neighbors
+      if (cellsToCreate > 0) {
+        numCreated += this.create({
+          extended: cellsToCreate,
+          startingDirection
+        });
+      }
+      // All cells have been recursivly created
+      return numCreated;
+    }
+    else if (immediate > 0) {
       cellsToCreate = immediate;
-      if (cellsToCreate == 0) return numCreated;
 
       for (let direction of CARDINALS[startingDirection]) {
         if (_neighbors[direction]) continue;
@@ -109,10 +124,16 @@ export function cell() {
         }
       }
     }
-    else if (extended) {
+    else if (extended > 0) {
       // cellsToCreate = extended;
       //
       // //TODO - create extended neighbors by in proper direction
+
+      // (1) Tell cardinal directions to create as many immediate as possible
+      // (2) If more to create, tell intercardinals to create as many as possible
+      // (3) If more to create, divy up rest to cardinals to create extended
+
+
       // cellsToCreate -= _neighbors[startingDirection].create({
       //   immediate: ,
       //   startingDirection: startingDirection
@@ -121,6 +142,7 @@ export function cell() {
       // TODO: linkNeighbors();
     }
 
+    // this.linkNeighbors(); // TODO: NEED THIS HERE?
     return numCreated;
   }
   function setNeighbors(newNeighbors) {
@@ -139,6 +161,10 @@ export function cell() {
     }
   }
   function linkNeighborBackToThis(neighbor) {
+    // GUARD NOT WORKING
+    // if (_neighbors[neighbor].getNeighbors[OPPOSITE_DIRECTIONS[neighbor]] !== null) {
+    //   return;
+    // }
     _neighbors[neighbor].setNeighbors({
       [OPPOSITE_DIRECTIONS[neighbor]]: this
     });
@@ -183,11 +209,16 @@ export function cell() {
       }
     };
 
+    const newNeighbors = {};
     NEIGHBOR_LINKS_FOR[neighbor].fromNeighbor.forEach((neighborOfNeighbor, index) => {
-      _neighbors[neighbor].setNeighbors({
-        [neighborOfNeighbor]: _neighbors[NEIGHBOR_LINKS_FOR[neighbor].fromCenter[index]]
-      });
+      // GUARD NOT WORKING
+      // if (_neighbors[neighbor].getNeighbors[neighborOfNeighbor] !== null) {
+      //   return;
+      // }
+      newNeighbors[neighborOfNeighbor] =
+        _neighbors[NEIGHBOR_LINKS_FOR[neighbor].fromCenter[index]]
     });
+    _neighbors[neighbor].setNeighbors(newNeighbors);
   }
 
   const publicApi = {

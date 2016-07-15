@@ -314,7 +314,8 @@ export default function testCell() {
     newCell.create({immediate: 1});
 
     const actual =
-      newCell.numberOfNeighbors() === 1 && newCell.getNeighbors().east !== null;
+      newCell.numberOfNeighbors() === 1 &&
+      newCell.getNeighbors().east !== null;
     const expected = true;
 
     assert.same(actual, expected, msg);
@@ -339,11 +340,45 @@ export default function testCell() {
     assert.end();
   });
 
+  test('create 4 neighbors', assert => {
+    const msg = 'should create 4 neighbors in cardinal directions';
+
+    const newCell = cell();
+    newCell.create({cellsToCreate: 4});
+
+    const actual =
+      newCell.numberOfNeighbors() === 4 &&
+      newCell.getNeighbors().north !== null &&
+      newCell.getNeighbors().east !== null &&
+      newCell.getNeighbors().south !== null &&
+      newCell.getNeighbors().west !== null;
+    const expected = true;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
   test('create 2 immediate neighbors with direction', assert => {
     const msg = 'should create 2 neighbors in cardinal directions starting north';
 
     const newCell = cell();
     newCell.create({immediate: 2, startingDirection: "north"});
+
+    const actual =
+      newCell.numberOfNeighbors() === 2 &&
+      newCell.getNeighbors().north !== null &&
+      newCell.getNeighbors().east !== null;
+    const expected = true;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('create 2 neighbors with direction', assert => {
+    const msg = 'should create 2 neighbors in cardinal directions starting north';
+
+    const newCell = cell();
+    newCell.create({cellsToCreate: 2, startingDirection: "north"});
 
     const actual =
       newCell.numberOfNeighbors() === 2 &&
