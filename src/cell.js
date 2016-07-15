@@ -1,17 +1,20 @@
 export const MAX_IMMEDIATE_NEIGHBORS = 8;
 
+// Directions to loop through based on starting direction
 const CARDINALS = {
   east:  ["east", "south", "west", "north"],
   south: ["south", "west", "north", "east"],
   west:  ["west", "north", "east", "south"],
   north: ["north", "east", "south", "west"]
 };
+// Directions to loop through based on starting direction
 const INTERCARDINALS = {
   east:  ["southEast", "southWest", "northWest", "northEast"],
   south: ["southWest", "northWest", "northEast", "southEast"],
   west:  ["northWest", "northEast", "southEast", "southWest"],
   north: ["northEast", "southEast", "southWest", "northWest"]
 }
+//Example usage is creating links from immediate neighbor back to center
 const OPPOSITE_DIRECTIONS = {
   north: 'south',
   northEast: 'southWest',
@@ -22,6 +25,45 @@ const OPPOSITE_DIRECTIONS = {
   west: 'east',
   northWest: 'southEast'
 }
+// Each object key: neighbor from center cell
+// Each fromNeighbor array element: neighbor direction from the object key
+// Each fromCenter array element: neighbor direction from center cell to
+//   get to the corresponding fromNeighbor value
+const NEIGHBOR_LINKS_FOR = {
+  north: {
+    fromNeighbor: ["east", "southEast", "southWest", "west"],
+    fromCenter:   ["northEast", "east", "west", "northWest"]
+  },
+  northEast: {
+    fromNeighbor: ["south", "west"],
+    fromCenter:   ["east", "north"]
+  },
+  east: {
+    fromNeighbor: ["south", "southWest", "northWest", "north"],
+    fromCenter:   ["southEast", "south", "north", "northEast"]
+  },
+  southEast: {
+    fromNeighbor: ["west", "north"],
+    fromCenter:   ["south", "east"]
+  },
+  south: {
+    fromNeighbor: ["west", "northWest", "northEast", "east"],
+    fromCenter:   ["southWest", "west", "east", "southEast"]
+  },
+  southWest: {
+    fromNeighbor: ["north", "east"],
+    fromCenter:   ["west", "south"]
+  },
+  west: {
+    fromNeighbor: ["north", "northEast", "southEast", "south"],
+    fromCenter:   ["northWest", "north", "south", "southWest"]
+  },
+  northWest: {
+    fromNeighbor: ["east", "south"],
+    fromCenter:   ["north", "west"]
+  }
+};
+
 
 const passesRule2 = (isAlive, livingNeighbors) => (
   //Rules 1 & 3 are just clarifications of rule 3
@@ -33,6 +75,7 @@ const passesRule4 = (isAlive, livingNeighbors) => (
   !isAlive && livingNeighbors === 3
 );
 const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args));
+
 
 export function cell() {
   let _alive = false;
@@ -156,69 +199,33 @@ export function cell() {
     for (let neighbor in _neighbors) {
       if (_neighbors[neighbor] === null) continue;
 
-      this.linkNeighborBackToThis(neighbor);
-      this.linkNeighborToNeighbors(neighbor);
+      _neighbors[neighbor].setNeighbors(
+        Object.assign({},
+          this.getNeighborLinkBackToThis(neighbor),
+          this.getLinksFromNeighborToNeighbors(neighbor)
+        )
+      );
     }
   }
-  function linkNeighborBackToThis(neighbor) {
-    // GUARD NOT WORKING
-    // if (_neighbors[neighbor].getNeighbors[OPPOSITE_DIRECTIONS[neighbor]] !== null) {
-    //   return;
-    // }
-    _neighbors[neighbor].setNeighbors({
-      [OPPOSITE_DIRECTIONS[neighbor]]: this
-    });
+  function getNeighborLinkBackToThis(neighbor) {
+    if (_neighbors[neighbor].getNeighbors[OPPOSITE_DIRECTIONS[neighbor]]) {
+      //Neighbor link already exists
+      return {};
+    }
+    return {[OPPOSITE_DIRECTIONS[neighbor]]: this};
   }
-  function linkNeighborToNeighbors(neighbor) {
-    // Each object key: neighbor from center cell
-    // Each fromNeighbor array element: neighbor direction from the object key
-    // Each fromCenter array element: neighbor direction from center cell to
-    //   get to the corresponding fromNeighbor value
-    const NEIGHBOR_LINKS_FOR = {
-      north: {
-        fromNeighbor: ["east", "southEast", "southWest", "west"],
-        fromCenter:   ["northEast", "east", "west", "northWest"]
-      },
-      northEast: {
-        fromNeighbor: ["south", "west"],
-        fromCenter:   ["east", "north"]
-      },
-      east: {
-        fromNeighbor: ["south", "southWest", "northWest", "north"],
-        fromCenter:   ["southEast", "south", "north", "northEast"]
-      },
-      southEast: {
-        fromNeighbor: ["west", "north"],
-        fromCenter:   ["south", "east"]
-      },
-      south: {
-        fromNeighbor: ["west", "northWest", "northEast", "east"],
-        fromCenter:   ["southWest", "west", "east", "southEast"]
-      },
-      southWest: {
-        fromNeighbor: ["north", "east"],
-        fromCenter:   ["west", "south"]
-      },
-      west: {
-        fromNeighbor: ["north", "northEast", "southEast", "south"],
-        fromCenter:   ["northWest", "north", "south", "southWest"]
-      },
-      northWest: {
-        fromNeighbor: ["east", "south"],
-        fromCenter:   ["north", "west"]
-      }
-    };
-
+  function getLinksFromNeighborToNeighbors(neighbor) {
     const newNeighbors = {};
+
     NEIGHBOR_LINKS_FOR[neighbor].fromNeighbor.forEach((neighborOfNeighbor, index) => {
-      // GUARD NOT WORKING
-      // if (_neighbors[neighbor].getNeighbors[neighborOfNeighbor] !== null) {
-      //   return;
-      // }
+      if (_neighbors[neighbor].getNeighbors[neighborOfNeighbor]) {
+        //Neighbor link already exists
+        return;
+      }
       newNeighbors[neighborOfNeighbor] =
         _neighbors[NEIGHBOR_LINKS_FOR[neighbor].fromCenter[index]]
     });
-    _neighbors[neighbor].setNeighbors(newNeighbors);
+    return newNeighbors;
   }
 
   const publicApi = {
@@ -238,8 +245,8 @@ export function cell() {
       return this;
     },
     linkNeighbors: linkNeighbors,
-    linkNeighborBackToThis: linkNeighborBackToThis,
-    linkNeighborToNeighbors: linkNeighborToNeighbors
+    getNeighborLinkBackToThis: getNeighborLinkBackToThis,
+    getLinksFromNeighborToNeighbors: getLinksFromNeighborToNeighbors
   };
 
   return publicApi;
