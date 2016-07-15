@@ -75,17 +75,19 @@ export function cell() {
     }
     return true;
   }
-  function create(options) {
+  function create({
+    startingDirection = "east",
+    immediate = false,
+    extended = false
+  } = {}) {
     let cellsToCreate = 0;
     let numCreated = 0;
 
-    if (!options.startingDirection) options.startingDirection = "east";
-
-    if (options.immediate) {
-      cellsToCreate = options.immediate;
+    if (immediate) {
+      cellsToCreate = immediate;
       if (cellsToCreate == 0) return numCreated;
 
-      for (let direction of CARDINALS[options.startingDirection]) {
+      for (let direction of CARDINALS[startingDirection]) {
         if (_neighbors[direction]) continue;
         _neighbors[direction] = cell();
         cellsToCreate--;
@@ -96,7 +98,7 @@ export function cell() {
         }
       }
 
-      for (let direction of INTERCARDINALS[options.startingDirection]) {
+      for (let direction of INTERCARDINALS[startingDirection]) {
         if (_neighbors[direction]) continue;
         _neighbors[direction] = cell();
         cellsToCreate--;
@@ -107,13 +109,13 @@ export function cell() {
         }
       }
     }
-    else if (options.extended) {
-      // cellsToCreate = options.extended;
+    else if (extended) {
+      // cellsToCreate = extended;
       //
       // //TODO - create extended neighbors by in proper direction
-      // cellsToCreate -= _neighbors[options.startingDirection].create({
+      // cellsToCreate -= _neighbors[startingDirection].create({
       //   immediate: ,
-      //   startingDirection: options.startingDirection
+      //   startingDirection: startingDirection
       // });
 
       // TODO: linkNeighbors();
@@ -130,16 +132,65 @@ export function cell() {
   }
   function linkNeighbors() {
     this.linkNeighborsBackToThis();
+    this.linkNeighborsTogether();
   }
   function linkNeighborsBackToThis() {
     for (let direction in _neighbors) {
       if (_neighbors[direction] === null) continue;
-      // console.log('= linking ' + direction);
-      // console.log('===== before: ' + JSON.stringify(_neighbors[direction].getNeighbors()));
+
       _neighbors[direction].setNeighbors({
         [OPPOSITE_DIRECTIONS[direction]]: this
       });
-      // console.log('===== after:  ' + JSON.stringify(_neighbors[direction].getNeighbors()));
+    }
+  }
+  function linkNeighborsTogether() {
+    // Each object key: neighbor from center cell
+    // Each fromNeighbor array element: neighbor direction from the object key
+    // Each fromCenter array element: neighbor direction from center cell to
+    //   get to the corresponding fromNeighbor value
+    const NEIGHBOR_LINKS_FOR = {
+      north: {
+        fromNeighbor: ["east", "southEast", "southWest", "west"],
+        fromCenter:   ["northEast", "east", "west", "northWest"]
+      },
+      northEast: {
+        fromNeighbor: ["south", "west"],
+        fromCenter:   ["east", "north"]
+      },
+      east: {
+        fromNeighbor: ["south", "southWest", "northWest", "north"],
+        fromCenter:   ["southEast", "south", "north", "northEast"]
+      },
+      southEast: {
+        fromNeighbor: ["west", "north"],
+        fromCenter:   ["south", "east"]
+      },
+      south: {
+        fromNeighbor: ["west", "northWest", "northEast", "east"],
+        fromCenter:   ["southWest", "west", "east", "southEast"]
+      },
+      southWest: {
+        fromNeighbor: ["north", "east"],
+        fromCenter:   ["west", "south"]
+      },
+      west: {
+        fromNeighbor: ["north", "northEast", "southEast", "south"],
+        fromCenter:   ["northWest", "north", "south", "southWest"]
+      },
+      northWest: {
+        fromNeighbor: ["east", "south"],
+        fromCenter:   ["north", "west"]
+      }
+    };
+
+    for (let neighbor in _neighbors) {
+      if (_neighbors[neighbor] === null) continue;
+
+      NEIGHBOR_LINKS_FOR[neighbor].fromNeighbor.forEach((neighborOfNeighbor, index) => {
+        _neighbors[neighbor].setNeighbors({
+          [neighborOfNeighbor]: _neighbors[NEIGHBOR_LINKS_FOR[neighbor].fromCenter[index]]
+        });
+      });
     }
   }
 
@@ -160,7 +211,8 @@ export function cell() {
       return this;
     },
     linkNeighbors: linkNeighbors,
-    linkNeighborsBackToThis: linkNeighborsBackToThis
+    linkNeighborsBackToThis: linkNeighborsBackToThis,
+    linkNeighborsTogether: linkNeighborsTogether
   };
 
   return publicApi;

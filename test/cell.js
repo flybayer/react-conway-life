@@ -365,18 +365,68 @@ export default function testCell() {
     assert.end();
   });
 
-  test('immediate neighbor linking', assert => {
-    const msg = 'should link all combinations of 4 cardinal neighbors';
+  test('immediate neighbor linking back to self', assert => {
+    const msg = 'should link all neighbors back to self';
 
     const newCell = cell();
-    newCell.create({immediate: 4});
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+
+    const north     = newCell.getNeighbors().north;
+    const northEast = newCell.getNeighbors().northEast;
+    const east      = newCell.getNeighbors().east;
+    const southEast = newCell.getNeighbors().southEast;
+    const south     = newCell.getNeighbors().south;
+    const southWest = newCell.getNeighbors().southWest;
+    const west      = newCell.getNeighbors().west;
+    const northWest = newCell.getNeighbors().northWest;
 
     const actual =
-      newCell.getNeighbors().north.getNeighbors().south === newCell &&
-      newCell.getNeighbors().east.getNeighbors().west === newCell &&
-      newCell.getNeighbors().south.getNeighbors().north === newCell &&
-      newCell.getNeighbors().west.getNeighbors().east === newCell;
-    // TODO add diagonals
+      north.getNeighbors().south         === newCell &&
+      northEast.getNeighbors().southWest === newCell &&
+      east.getNeighbors().west           === newCell &&
+      southEast.getNeighbors().northWest === newCell &&
+      south.getNeighbors().north         === newCell &&
+      southWest.getNeighbors().northEast === newCell &&
+      west.getNeighbors().east           === newCell &&
+      northWest.getNeighbors().southEast === newCell;
+    const expected = true;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('immediate neighbor inter-linking', assert => {
+    const msg = 'should link all immediate neighbors together';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+
+    const north     = newCell.getNeighbors().north;
+    const northEast = newCell.getNeighbors().northEast;
+    const east      = newCell.getNeighbors().east;
+    const southEast = newCell.getNeighbors().southEast;
+    const south     = newCell.getNeighbors().south;
+    const southWest = newCell.getNeighbors().southWest;
+    const west      = newCell.getNeighbors().west;
+    const northWest = newCell.getNeighbors().northWest;
+
+    const actual =
+      north.getNeighbors().southEast === east &&
+      northEast.getNeighbors().west  === north &&
+      northEast.getNeighbors().south === east &&
+      east.getNeighbors().northWest  === north &&
+      east.getNeighbors().southWest  === south &&
+      southEast.getNeighbors().north === east &&
+      southEast.getNeighbors().west  === south &&
+      south.getNeighbors().northEast === east &&
+      south.getNeighbors().northWest === west &&
+      southWest.getNeighbors().east  === south &&
+      southWest.getNeighbors().north === west &&
+      west.getNeighbors().southEast  === south &&
+      west.getNeighbors().northEast  === north &&
+      northWest.getNeighbors().south === west &&
+      northWest.getNeighbors().east  === north &&
+      north.getNeighbors().southWest === west;
     const expected = true;
 
     assert.same(actual, expected, msg);
