@@ -131,19 +131,19 @@ export function cell() {
     return this;
   }
   function linkNeighbors() {
-    this.linkNeighborsBackToThis();
-    this.linkNeighborsTogether();
-  }
-  function linkNeighborsBackToThis() {
-    for (let direction in _neighbors) {
-      if (_neighbors[direction] === null) continue;
+    for (let neighbor in _neighbors) {
+      if (_neighbors[neighbor] === null) continue;
 
-      _neighbors[direction].setNeighbors({
-        [OPPOSITE_DIRECTIONS[direction]]: this
-      });
+      this.linkNeighborBackToThis(neighbor);
+      this.linkNeighborToNeighbors(neighbor);
     }
   }
-  function linkNeighborsTogether() {
+  function linkNeighborBackToThis(neighbor) {
+    _neighbors[neighbor].setNeighbors({
+      [OPPOSITE_DIRECTIONS[neighbor]]: this
+    });
+  }
+  function linkNeighborToNeighbors(neighbor) {
     // Each object key: neighbor from center cell
     // Each fromNeighbor array element: neighbor direction from the object key
     // Each fromCenter array element: neighbor direction from center cell to
@@ -183,15 +183,11 @@ export function cell() {
       }
     };
 
-    for (let neighbor in _neighbors) {
-      if (_neighbors[neighbor] === null) continue;
-
-      NEIGHBOR_LINKS_FOR[neighbor].fromNeighbor.forEach((neighborOfNeighbor, index) => {
-        _neighbors[neighbor].setNeighbors({
-          [neighborOfNeighbor]: _neighbors[NEIGHBOR_LINKS_FOR[neighbor].fromCenter[index]]
-        });
+    NEIGHBOR_LINKS_FOR[neighbor].fromNeighbor.forEach((neighborOfNeighbor, index) => {
+      _neighbors[neighbor].setNeighbors({
+        [neighborOfNeighbor]: _neighbors[NEIGHBOR_LINKS_FOR[neighbor].fromCenter[index]]
       });
-    }
+    });
   }
 
   const publicApi = {
@@ -211,8 +207,8 @@ export function cell() {
       return this;
     },
     linkNeighbors: linkNeighbors,
-    linkNeighborsBackToThis: linkNeighborsBackToThis,
-    linkNeighborsTogether: linkNeighborsTogether
+    linkNeighborBackToThis: linkNeighborBackToThis,
+    linkNeighborToNeighbors: linkNeighborToNeighbors
   };
 
   return publicApi;
