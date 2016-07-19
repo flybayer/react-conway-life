@@ -122,20 +122,23 @@ export function cell() {
     immediate = 0,
     extended = 0
   } = {}) {
+    let cellsLeftToCreate = 0;
     let numCreated = 0;
 
     if (cellsToCreate > 0) {
+      cellsLeftToCreate = cellsToCreate;
+
       // Create as many immediate neighbors as possible
       numCreated += this.create({
-        immediate: cellsToCreate,
+        immediate: cellsLeftToCreate,
         startingDirection
       });
-      cellsToCreate -= numCreated;
+      cellsLeftToCreate -= numCreated;
 
       // If still more cells to create, recursivly create extended neighbors
-      if (cellsToCreate > 0) {
+      if (cellsLeftToCreate > 0) {
         numCreated += this.create({
-          extended: cellsToCreate,
+          extended: cellsLeftToCreate,
           startingDirection
         });
       }
@@ -143,50 +146,140 @@ export function cell() {
       return numCreated;
     }
     else if (immediate > 0) {
-      cellsToCreate = immediate;
+      cellsLeftToCreate = immediate;
 
       for (let direction of CARDINALS[startingDirection]) {
         if (_neighbors[direction]) continue;
         _neighbors[direction] = cell();
-        cellsToCreate--;
+        cellsLeftToCreate--;
         numCreated++;
-        if (cellsToCreate == 0) {
-          this.linkNeighbors();
-          return numCreated;
+        if (cellsLeftToCreate === 0) break;
+      }
+
+      if (cellsLeftToCreate > 0) {
+        for (let direction of INTERCARDINALS[startingDirection]) {
+          if (_neighbors[direction]) continue;
+          _neighbors[direction] = cell();
+          cellsLeftToCreate--;
+          numCreated++;
+          if (cellsLeftToCreate === 0) break;
         }
       }
 
-      for (let direction of INTERCARDINALS[startingDirection]) {
-        if (_neighbors[direction]) continue;
-        _neighbors[direction] = cell();
-        cellsToCreate--;
-        numCreated++;
-        if (cellsToCreate == 0) {
-          this.linkNeighbors();
-          return numCreated;
-        }
-      }
+      this.linkNeighbors();
+      return numCreated;
     }
     else if (extended > 0) {
-      // cellsToCreate = extended;
-      //
-      // //TODO - create extended neighbors by in proper direction
+      if (numberOfNeighbors() < MAX_IMMEDIATE_NEIGHBORS) {
+        throw new Error("Must create max immediate neighbors before creating extended ones");
+      }
 
-      // (1) Tell cardinal directions to create as many immediate as possible
-      // (2) If more to create, tell intercardinals to create as many as possible
-      // (3) If more to create, divy up rest to cardinals to create extended
+      cellsToCreate = extended;
+      let toCreateThisBatch = extended;
+
+      console.log("\n===================================");
+      console.log("     START OF EXTENDED ROUTINE ");
+      console.log("         creating: " + toCreateThisBatch);
+      console.log("===================================");
+
+      // -----------------------------------------------------------------
+      // 1. Have cardinal directions create as many immediates as possible
+      // -----------------------------------------------------------------
+      console.log("=== IMMEDIATE CARDINALS ===> " + toCreateThisBatch);
+      CARDINALS[startingDirection].forEach((direction, index) => {
+        let numThisDirection = Math.floor(toCreateThisBatch / 4);
+        // Spread out the remainder among the directions
+        if (toCreateThisBatch % 4 > index) numThisDirection++;
+
+        console.log("creating " + direction + ": " + numThisDirection + " immediate");
+
+        if (numThisDirection === 0) return;
+
+        const created = _neighbors[direction].create({
+          immediate: numThisDirection,
+          startingDirection
+        });
+        numCreated += created;
+        console.log("created: " + created);
+      });
+
+      if (cellsToCreate - numCreated <= 0) {
+        console.log("***********************************");
+        console.log("     END OF EXTENDED ROUTINE ");
+        console.log("         created: " + numCreated);
+        console.log("***********************************\n");
+
+        // this.linkNeighbors();
+        return numCreated;
+      }
 
 
-      // cellsToCreate -= _neighbors[startingDirection].create({
-      //   immediate: ,
-      //   startingDirection: startingDirection
-      // });
+      // ----------------------------------------------------------------------
+      // 2. Have intercardinal directions create as many immediates as possible
+      // ----------------------------------------------------------------------
+      toCreateThisBatch = cellsToCreate - numCreated;
+
+      console.log("=== IMMEDIATE INTERCARDINALS ===> " + toCreateThisBatch);
+      INTERCARDINALS[startingDirection].forEach((direction, index) => {
+        let numThisDirection = Math.floor(toCreateThisBatch / 4);
+        // Spread out the remainder among the directions
+        if (toCreateThisBatch % 4 > index) numThisDirection++;
+
+        console.log("creating " + direction + ": " + numThisDirection + " immediate");
+
+        if (numThisDirection === 0) return;
+
+        const created = _neighbors[direction].create({
+          immediate: numThisDirection,
+          startingDirection
+        });
+        numCreated += created;
+        console.log("created: " + created);
+      });
+
+      if (cellsToCreate - numCreated <= 0) {
+        console.log("***********************************");
+        console.log("     END OF EXTENDED ROUTINE ");
+        console.log("         created: " + numCreated);
+        console.log("***********************************\n");
+
+        // this.linkNeighbors();
+        return numCreated;
+      }
+
+
+      // -----------------------------------------------------------------
+      // 3. Have cardinal directions create the rest as extended neighbors
+      // -----------------------------------------------------------------
+      toCreateThisBatch = cellsToCreate - numCreated;
+
+      console.log("=== EXTENDED CARDINALS ===> " + toCreateThisBatch);
+      CARDINALS[startingDirection].forEach((direction, index) => {
+        let numThisDirection = Math.floor(toCreateThisBatch / 4);
+        // Spread out the remainder among the directions
+        if (toCreateThisBatch % 4 > index) numThisDirection++;
+
+        console.log("\n * creating " + direction + ": " + numThisDirection + " EXTENDED");
+
+        if (numThisDirection === 0) return;
+
+        numCreated += _neighbors[direction].create({
+          extended: numThisDirection,
+          startingDirection
+        });
+        console.log("created: " + numCreated);
+      });
+
+      console.log("***********************************");
+      console.log("     END OF EXTENDED ROUTINE ");
+      console.log("         created: " + numCreated);
+      console.log("***********************************\n");
 
       // TODO: linkNeighbors();
+      return numCreated;
     }
 
-    // this.linkNeighbors(); // TODO: NEED THIS HERE?
-    return numCreated;
+    throw new Error("Should never reach this place in cell().create()");
   }
   function setNeighbors(newNeighbors) {
     if (!valid(newNeighbors)) throw new Error("invalid neighbors!");

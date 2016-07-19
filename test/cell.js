@@ -303,9 +303,9 @@ export default function testCell() {
   });
 
 
-  // ------------------
-  // CREATING NEIGHBORS
-  // ------------------
+  // ----------------------------
+  // CREATING IMMEDIATE NEIGHBORS
+  // ----------------------------
 
   test('create 1 immediate neighbor', assert => {
     const msg = 'should create 1 east neighbor';
@@ -446,27 +446,131 @@ export default function testCell() {
     const northWest = newCell.getNeighbors().northWest;
 
     const actual =
+      north.getNeighbors().east      === northEast &&
       north.getNeighbors().southEast === east &&
       northEast.getNeighbors().west  === north &&
       northEast.getNeighbors().south === east &&
       east.getNeighbors().northWest  === north &&
+      east.getNeighbors().north      === northEast &&
+      east.getNeighbors().south      === southEast &&
       east.getNeighbors().southWest  === south &&
       southEast.getNeighbors().north === east &&
       southEast.getNeighbors().west  === south &&
       south.getNeighbors().northEast === east &&
+      south.getNeighbors().east      === southEast &&
+      south.getNeighbors().west      === southWest &&
       south.getNeighbors().northWest === west &&
       southWest.getNeighbors().east  === south &&
       southWest.getNeighbors().north === west &&
       west.getNeighbors().southEast  === south &&
+      west.getNeighbors().south      === southWest &&
+      west.getNeighbors().north      === northWest &&
       west.getNeighbors().northEast  === north &&
       northWest.getNeighbors().south === west &&
       northWest.getNeighbors().east  === north &&
-      north.getNeighbors().southWest === west;
+      north.getNeighbors().southWest === west &&
+      north.getNeighbors().west      === northWest;
     const expected = true;
 
     assert.same(actual, expected, msg);
     assert.end();
   });
+
+  // TODO: Create test to check linking if some neighbors already linked
+
+  // ---------------------------
+  // CREATING EXTENDED NEIGHBORS
+  // ---------------------------
+
+  test('creating 1 row of extended neighbors', assert => {
+    const msg = 'should create 1 row of extended neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+
+    const actual = newCell.create({extended: 16});
+    const expected = 16;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('creating 2 rows of extended neighbors', assert => {
+    const msg = 'should create 2 rows of extended neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+
+    const actual = newCell.create({extended: 40});
+    const expected = 40;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  // test('creating 3 rows of extended neighbors', assert => {
+  //   const msg = 'should create 3 rows of extended neighbors';
+  //
+  //   const newCell = cell();
+  //   newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+  //
+  //   const actual = newCell.create({extended: 72});
+  //   const expected = 72;
+  //
+  //   assert.same(actual, expected, msg);
+  //   assert.end();
+  // });
+
+  test('number of neighbors of neighbors after creating extended', assert => {
+    const msg = 'northEast should have max number of neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+    newCell.create({extended: 16});
+
+    const actual = newCell.getNeighbors().northEast.numberOfNeighbors();
+    const expected = MAX_IMMEDIATE_NEIGHBORS;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('linking of extended neighbors from first neighbor', assert => {
+    const msg = 'should create all possible links from first neighbor';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+    newCell.create({extended: 9, startingDirection: "east"});
+    // 9 extended because that's the minimum needed for the startingDirection
+    // to create 3 immediate neighbors
+
+    const north     = newCell.getNeighbors().east.getNeighbors().north;
+    const northEast = newCell.getNeighbors().east.getNeighbors().northEast;
+    const east      = newCell.getNeighbors().east.getNeighbors().east;
+    const southEast = newCell.getNeighbors().east.getNeighbors().southEast;
+    const south     = newCell.getNeighbors().east.getNeighbors().south;
+
+    const actual =
+      north.getNeighbors().east      === northEast &&
+      north.getNeighbors().southEast === east &&
+      northEast.getNeighbors().west  === north &&
+      northEast.getNeighbors().south === east &&
+      east.getNeighbors().northWest  === north &&
+      east.getNeighbors().north      === northEast &&
+      east.getNeighbors().south      === southEast &&
+      east.getNeighbors().southWest  === south &&
+      southEast.getNeighbors().north === east &&
+      southEast.getNeighbors().west  === south &&
+      south.getNeighbors().northEast === east &&
+      south.getNeighbors().east      === southEast;
+    const expected = true;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  // TODO: WRITE MORE TESTS. TEST LINKING, ETC.
+
 
   // test('What are you testing?', assert => {
   //   const msg = 'what should it do?';
