@@ -181,17 +181,17 @@ export function cell() {
       cellsToCreate = extended;
       let toCreateThisBatch = extended;
 
-      console.log("\n===================================");
-      console.log("     START OF EXTENDED ROUTINE ");
-      console.log("         creating: " + toCreateThisBatch);
-      console.log("===================================");
+      // console.log("\n===================================");
+      // console.log("     START OF EXTENDED ROUTINE ");
+      // console.log("         creating: " + toCreateThisBatch);
+      // console.log("===================================");
 
       // -----------------------------------------------------------------
       // 1. Have cardinal directions create as many immediates as possible
       // -----------------------------------------------------------------
-      console.log("=== IMMEDIATE CARDINALS ===> " + toCreateThisBatch);
+      // console.log("=== IMMEDIATE CARDINALS ===> " + toCreateThisBatch);
       CARDINALS[startingDirection].forEach((direction, index) => {
-        console.log("creating " + direction + ": " + toCreateThisBatch + " immediate");
+        // console.log("creating " + direction + ": " + toCreateThisBatch + " immediate");
 
         if (toCreateThisBatch === 0) return;
 
@@ -201,16 +201,14 @@ export function cell() {
         });
         numCreated += created;
         toCreateThisBatch -= created;
-        console.log("created: " + created);
+        // console.log("created: " + created);
       });
 
       if (cellsToCreate - numCreated <= 0) {
-        console.log("***********************************");
-        console.log("     END OF EXTENDED ROUTINE ");
-        console.log("         created: " + numCreated);
-        console.log("***********************************\n");
-
-        // this.linkNeighbors();
+        // console.log("***********************************");
+        // console.log("     END OF EXTENDED ROUTINE ");
+        // console.log("         created: " + numCreated);
+        // console.log("***********************************\n");
         return numCreated;
       }
 
@@ -220,9 +218,9 @@ export function cell() {
       // ----------------------------------------------------------------------
       toCreateThisBatch = cellsToCreate - numCreated;
 
-      console.log("=== IMMEDIATE INTERCARDINALS ===> " + toCreateThisBatch);
+      // console.log("=== IMMEDIATE INTERCARDINALS ===> " + toCreateThisBatch);
       INTERCARDINALS[startingDirection].forEach((direction, index) => {
-        console.log("creating " + direction + ": " + toCreateThisBatch + " immediate");
+        // console.log("creating " + direction + ": " + toCreateThisBatch + " immediate");
 
         if (toCreateThisBatch === 0) return;
 
@@ -232,16 +230,14 @@ export function cell() {
         });
         numCreated += created;
         toCreateThisBatch -= created;
-        console.log("created: " + created);
+        // console.log("created: " + created);
       });
 
       if (cellsToCreate - numCreated <= 0) {
-        console.log("***********************************");
-        console.log("     END OF EXTENDED ROUTINE ");
-        console.log("         created: " + numCreated);
-        console.log("***********************************\n");
-
-        // this.linkNeighbors();
+        // console.log("***********************************");
+        // console.log("     END OF EXTENDED ROUTINE ");
+        // console.log("         created: " + numCreated);
+        // console.log("***********************************\n");
         return numCreated;
       }
 
@@ -251,13 +247,13 @@ export function cell() {
       // -----------------------------------------------------------------
       toCreateThisBatch = cellsToCreate - numCreated;
 
-      console.log("=== EXTENDED CARDINALS ===> " + toCreateThisBatch);
+      // console.log("=== EXTENDED CARDINALS ===> " + toCreateThisBatch);
       CARDINALS[startingDirection].forEach((direction, index) => {
         let numThisDirection = Math.floor(toCreateThisBatch / 4);
         // Spread out the remainder among the directions
         if (toCreateThisBatch % 4 > index) numThisDirection++;
 
-        console.log("\n * creating " + direction + ": " + numThisDirection + " EXTENDED");
+        // console.log("\n * creating " + direction + ": " + numThisDirection + " EXTENDED");
 
         if (numThisDirection === 0) return;
 
@@ -266,15 +262,14 @@ export function cell() {
           startingDirection: direction
         });
         numCreated += created;
-        console.log("created: " + created);
+        // console.log("created: " + created);
       });
 
-      console.log("***********************************");
-      console.log("     END OF EXTENDED ROUTINE ");
-      console.log("         created: " + numCreated);
-      console.log("***********************************\n");
+      // console.log("***********************************");
+      // console.log("     END OF EXTENDED ROUTINE ");
+      // console.log("         created: " + numCreated);
+      // console.log("***********************************\n");
 
-      // TODO: linkNeighbors();
       return numCreated;
     }
 
