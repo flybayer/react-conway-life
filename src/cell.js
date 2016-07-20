@@ -125,6 +125,10 @@ export function cell() {
     let cellsLeftToCreate = 0;
     let numCreated = 0;
 
+    if (!(startingDirection in CARDINALS)) {
+      throw new Error("Starting direction: '" + startingDirection + "'. Starting direction must be a cardinal direction")
+    }
+
     if (cellsToCreate > 0) {
       cellsLeftToCreate = cellsToCreate;
 
@@ -187,19 +191,16 @@ export function cell() {
       // -----------------------------------------------------------------
       console.log("=== IMMEDIATE CARDINALS ===> " + toCreateThisBatch);
       CARDINALS[startingDirection].forEach((direction, index) => {
-        let numThisDirection = Math.floor(toCreateThisBatch / 4);
-        // Spread out the remainder among the directions
-        if (toCreateThisBatch % 4 > index) numThisDirection++;
+        console.log("creating " + direction + ": " + toCreateThisBatch + " immediate");
 
-        console.log("creating " + direction + ": " + numThisDirection + " immediate");
-
-        if (numThisDirection === 0) return;
+        if (toCreateThisBatch === 0) return;
 
         const created = _neighbors[direction].create({
-          immediate: numThisDirection,
+          immediate: toCreateThisBatch,
           startingDirection
         });
         numCreated += created;
+        toCreateThisBatch -= created;
         console.log("created: " + created);
       });
 
@@ -221,19 +222,16 @@ export function cell() {
 
       console.log("=== IMMEDIATE INTERCARDINALS ===> " + toCreateThisBatch);
       INTERCARDINALS[startingDirection].forEach((direction, index) => {
-        let numThisDirection = Math.floor(toCreateThisBatch / 4);
-        // Spread out the remainder among the directions
-        if (toCreateThisBatch % 4 > index) numThisDirection++;
+        console.log("creating " + direction + ": " + toCreateThisBatch + " immediate");
 
-        console.log("creating " + direction + ": " + numThisDirection + " immediate");
-
-        if (numThisDirection === 0) return;
+        if (toCreateThisBatch === 0) return;
 
         const created = _neighbors[direction].create({
-          immediate: numThisDirection,
+          immediate: toCreateThisBatch,
           startingDirection
         });
         numCreated += created;
+        toCreateThisBatch -= created;
         console.log("created: " + created);
       });
 
@@ -263,11 +261,12 @@ export function cell() {
 
         if (numThisDirection === 0) return;
 
-        numCreated += _neighbors[direction].create({
+        const created = _neighbors[direction].create({
           extended: numThisDirection,
-          startingDirection
+          startingDirection: direction
         });
-        console.log("created: " + numCreated);
+        numCreated += created;
+        console.log("created: " + created);
       });
 
       console.log("***********************************");

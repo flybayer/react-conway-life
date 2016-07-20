@@ -508,27 +508,89 @@ export default function testCell() {
     assert.end();
   });
 
-  // test('creating 3 rows of extended neighbors', assert => {
-  //   const msg = 'should create 3 rows of extended neighbors';
-  //
-  //   const newCell = cell();
-  //   newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
-  //
-  //   const actual = newCell.create({extended: 72});
-  //   const expected = 72;
-  //
-  //   assert.same(actual, expected, msg);
-  //   assert.end();
-  // });
-
-  test('number of neighbors of neighbors after creating extended', assert => {
-    const msg = 'northEast should have max number of neighbors';
+  test('creating 3 rows of extended neighbors', assert => {
+    const msg = 'should create 3 rows of extended neighbors';
 
     const newCell = cell();
     newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
-    newCell.create({extended: 16});
 
-    const actual = newCell.getNeighbors().northEast.numberOfNeighbors();
+    const actual = newCell.create({extended: 72});
+    const expected = 72;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('creating 4 rows of extended neighbors', assert => {
+    const msg = 'should create 4 rows of extended neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+
+    const actual = newCell.create({extended: 112});
+    const expected = 112;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('creating 7 rows of extended neighbors', assert => {
+    const msg = 'should create 4 rows of extended neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+
+    const actual = newCell.create({extended: 280});
+    const expected = 280;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('row 1 neighbor linking', assert => {
+    const msg = 'east should have max number of neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+    newCell.create({extended: 3, startingDirection: 'east'});
+    // 3 extended, because it should create first three as neighbors
+    // of east
+
+    const actual = newCell.getNeighbors().east.numberOfNeighbors();
+    const expected = MAX_IMMEDIATE_NEIGHBORS;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('row 2 neighbor linking', assert => {
+    const msg = 'west of west should have max number of neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+    newCell.create({extended: 40, startingDirection: 'east'});
+
+    const actual =
+      newCell.getNeighbors().west.getNeighbors().west.numberOfNeighbors();
+    const expected = MAX_IMMEDIATE_NEIGHBORS;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('row 7 neighbor linking', assert => {
+    const msg = 'northEast-northEast-northEast-northEast should have max number of neighbors';
+
+    const newCell = cell();
+    newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
+    newCell.create({extended: 280, startingDirection: 'east'});
+
+    const actual =
+      newCell
+        .getNeighbors().northEast
+        .getNeighbors().northEast
+        .getNeighbors().northEast
+        .getNeighbors().northEast.numberOfNeighbors();
     const expected = MAX_IMMEDIATE_NEIGHBORS;
 
     assert.same(actual, expected, msg);
@@ -540,9 +602,7 @@ export default function testCell() {
 
     const newCell = cell();
     newCell.create({immediate: MAX_IMMEDIATE_NEIGHBORS});
-    newCell.create({extended: 9, startingDirection: "east"});
-    // 9 extended because that's the minimum needed for the startingDirection
-    // to create 3 immediate neighbors
+    newCell.create({extended: 3, startingDirection: "east"});
 
     const north     = newCell.getNeighbors().east.getNeighbors().north;
     const northEast = newCell.getNeighbors().east.getNeighbors().northEast;
@@ -568,8 +628,6 @@ export default function testCell() {
     assert.same(actual, expected, msg);
     assert.end();
   });
-
-  // TODO: WRITE MORE TESTS. TEST LINKING, ETC.
 
 
   // test('What are you testing?', assert => {
