@@ -1,9 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { cell } from './cell';
+import biome from './biome';
 
+// DEBUGGING
 window.aCell = cell();
 window.cell = cell;
+window.biome = biome;
+// DEBUGGING
 
 const Cell = (props) => (
   <div
@@ -17,30 +21,26 @@ const Cell = (props) => (
   ></div>
 );
 
+// TODO: DISPLAY THE BIOME!!!
+
 const World = React.createClass({
   getInitialState() {
+    const myBiome = biome(9);
+    // myBiome.registerArrayUpdateCallback(this.handleStateUpdate);
+
     return {
-      cells: [
-        {
-          alive: false
-        },
-        {
-          alive: true
-        },
-        {
-          alive: false
-        },
-        {
-          alive: false
-        }
-      ]
+      biome: myBiome,
+      cells: myBiome.toArray(),
     };
   },
+  // handleStateUpdate(cells) {
+  //   this.setState({cells});
+  // },
   render() {
     return (
       <section>
-        {this.state.cells.map(function mapCells(cell) {
-          return <Cell alive={cell.alive} />
+        {this.state.cells.map(row => {
+          return row.map(cell => (<Cell alive={cell.alive} />))
         })}
       </section>
     );
