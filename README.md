@@ -13,10 +13,10 @@ npm install
 
 ```shell
 # run tests one time
-npm run test
+npm run 1test
 
 # auto run the tests on file changes
-npm run twatch
+npm test
 ```
 
 ## Build for the browser
@@ -26,5 +26,5 @@ npm run twatch
 npm run build
 
 # auto build on file changes
-npm run watch
+npm start
 ```
