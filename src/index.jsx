@@ -10,22 +10,20 @@ window.biome = biome;
 // DEBUGGING
 
 const Cell = (props) => (
-  <div
+  <td
     style={{
       backgroundColor: props.alive ? 'yellow' : 'black',
       border: '1px red solid',
-      display: 'inline-block',
       height: 20, //props.height???
       width: 20
     }}
-  ></div>
+  ></td>
 );
 
-// TODO: DISPLAY THE BIOME!!!
 
 const World = React.createClass({
   getInitialState() {
-    const myBiome = biome(9);
+    const myBiome = biome(40);
     // myBiome.registerArrayUpdateCallback(this.handleStateUpdate);
 
     return {
@@ -38,11 +36,13 @@ const World = React.createClass({
   // },
   render() {
     return (
-      <section>
-        {this.state.cells.map(row => {
-          return row.map(cell => (<Cell alive={cell.alive} />))
-        })}
-      </section>
+      <table>
+        {this.state.cells.map(row => (
+          <tr>
+            {row.map(cell => (cell ? <Cell alive={cell.alive} /> : <td style={{backgroundColor: 'grey', border: '1px black solid'}}></td>) )}
+          </tr>
+        ))}
+      </table>
     );
   }
 });
