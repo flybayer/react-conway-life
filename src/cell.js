@@ -331,7 +331,7 @@ export function cell() {
     create: create,
     setNeighbors: setNeighbors,
     getNeighbors() { return Object.assign({}, _neighbors); },
-    judgement() {
+    judge() {
       _alive = willLive();
       return this;
     },

@@ -185,7 +185,7 @@ export default function testCell() {
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
-    const actual = newCell.judgement().isAlive();
+    const actual = newCell.judge().isAlive();
     const expected = false;
 
     assert.same(actual, expected, msg);
@@ -207,7 +207,7 @@ export default function testCell() {
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
-    const actual = newCell.judgement().isAlive();
+    const actual = newCell.judge().isAlive();
     const expected = false;
 
     assert.same(actual, expected, msg);
@@ -229,7 +229,7 @@ export default function testCell() {
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
-    const actual = newCell.judgement().isAlive();
+    const actual = newCell.judge().isAlive();
     const expected = true;
 
     assert.same(actual, expected, msg);
@@ -251,7 +251,7 @@ export default function testCell() {
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
-    const actual = newCell.judgement().isAlive();
+    const actual = newCell.judge().isAlive();
     const expected = true;
 
     assert.same(actual, expected, msg);
@@ -273,7 +273,7 @@ export default function testCell() {
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
-    const actual = newCell.judgement().isAlive();
+    const actual = newCell.judge().isAlive();
     const expected = false;
 
     assert.same(actual, expected, msg);
@@ -295,7 +295,7 @@ export default function testCell() {
     };
     const newCell = cell().setNeighbors(neighbors);
 
-    const actual = newCell.judgement().isAlive();
+    const actual = newCell.judge().isAlive();
     const expected = true;
 
     assert.same(actual, expected, msg);
