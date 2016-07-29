@@ -78,7 +78,7 @@ const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args)
 
 
 export function cell() {
-  let _alive = false;
+  let _alive = (Math.random() >= 0.5) ? true : false;
   const _neighbors = {
     north: null,
     northEast: null,
@@ -319,6 +319,10 @@ export function cell() {
     isAlive() { return _alive; },
     beAlive() {
       _alive = true;
+      return this;
+    },
+    beDead() {
+      _alive = false;
       return this;
     },
     numberOfNeighbors: numberOfNeighbors,

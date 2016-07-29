@@ -20,10 +20,11 @@ const Cell = (props) => (
   ></td>
 );
 
+// TODO: hook up judgement ticking!
 
 const World = React.createClass({
   getInitialState() {
-    const myBiome = biome(40);
+    const myBiome = biome(450);
     // myBiome.registerArrayUpdateCallback(this.handleStateUpdate);
 
     return {

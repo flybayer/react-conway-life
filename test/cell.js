@@ -3,21 +3,21 @@ import test from 'tape';
 import {cell, MAX_IMMEDIATE_NEIGHBORS} from '../src/cell';
 
 export default function testCell() {
-  test('new cell isAlive', assert => {
-    const msg = 'should be dead';
-
-    const actual = cell().isAlive();
-    const expected = false;
-
-    assert.same(actual, expected, msg);
-    assert.end();
-  });
-
   test('new cell beAlive', assert => {
     const msg = 'should come alive';
 
     const actual = cell().beAlive().isAlive();
     const expected = true;
+
+    assert.same(actual, expected, msg);
+    assert.end();
+  });
+
+  test('new cell beDead', assert => {
+    const msg = 'should die';
+
+    const actual = cell().beDead().isAlive();
+    const expected = false;
 
     assert.same(actual, expected, msg);
     assert.end();
@@ -37,14 +37,14 @@ export default function testCell() {
     const msg = 'neighbors should be added';
 
     const neighbors = {
-      north: cell(),
-      northEast: cell(),
-      east: cell(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell(),
+      northEast:  cell(),
+      east:       cell(),
+      southEast:  cell(),
+      south:      cell(),
+      southWest:  cell(),
+      west:       cell(),
+      northWest:  cell()
     };
     const newCell = cell().setNeighbors(neighbors);
 
@@ -148,14 +148,14 @@ export default function testCell() {
 
     const newCell = cell();
     const neighbors = {
-      north: cell().beAlive(),
-      northEast: cell().beAlive(),
-      east: cell().beAlive(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beAlive(),
+      northEast:  cell().beAlive(),
+      east:       cell().beAlive(),
+      southEast:  cell().beDead(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
 
     const actual = newCell.setNeighbors(neighbors).numberOfLivingNeighbors();
@@ -174,14 +174,14 @@ export default function testCell() {
     const msg = 'live cell with 0 live neighbors should die';
 
     const neighbors = {
-      north: cell(),
-      northEast: cell(),
-      east: cell(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beDead(),
+      northEast:  cell().beDead(),
+      east:       cell().beDead(),
+      southEast:  cell().beDead(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
@@ -196,14 +196,14 @@ export default function testCell() {
     const msg = 'live cell with 1 live neighbor should die';
 
     const neighbors = {
-      north: cell(),
-      northEast: cell().beAlive(),
-      east: cell(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beAlive(),
+      northEast:  cell().beDead(),
+      east:       cell().beDead(),
+      southEast:  cell().beDead(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
@@ -218,14 +218,14 @@ export default function testCell() {
     const msg = 'live cell with 2 live neighbors should live';
 
     const neighbors = {
-      north: cell().beAlive(),
-      northEast: cell().beAlive(),
-      east: cell(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beAlive(),
+      northEast:  cell().beAlive(),
+      east:       cell().beDead(),
+      southEast:  cell().beDead(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
@@ -240,14 +240,14 @@ export default function testCell() {
     const msg = 'live cell with 3 live neighbors should live';
 
     const neighbors = {
-      north: cell().beAlive(),
-      northEast: cell().beAlive(),
-      east: cell().beAlive(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beAlive(),
+      northEast:  cell().beAlive(),
+      east:       cell().beAlive(),
+      southEast:  cell().beDead(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
@@ -262,14 +262,14 @@ export default function testCell() {
     const msg = 'live cell with >3 live neighbors should die';
 
     const neighbors = {
-      north: cell().beAlive(),
-      northEast: cell().beAlive(),
-      east: cell().beAlive(),
-      southEast: cell().beAlive(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beAlive(),
+      northEast:  cell().beAlive(),
+      east:       cell().beAlive(),
+      southEast:  cell().beAlive(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
     const newCell = cell().beAlive().setNeighbors(neighbors);
 
@@ -284,14 +284,14 @@ export default function testCell() {
     const msg = 'dead cell with 3 live neighbors should live';
 
     const neighbors = {
-      north: cell().beAlive(),
-      northEast: cell().beAlive(),
-      east: cell().beAlive(),
-      southEast: cell(),
-      south: cell(),
-      southWest: cell(),
-      west: cell(),
-      northWest: cell()
+      north:      cell().beAlive(),
+      northEast:  cell().beAlive(),
+      east:       cell().beAlive(),
+      southEast:  cell().beDead(),
+      south:      cell().beDead(),
+      southWest:  cell().beDead(),
+      west:       cell().beDead(),
+      northWest:  cell().beDead()
     };
     const newCell = cell().setNeighbors(neighbors);
 

@@ -84,7 +84,9 @@ export default function testBiome() {
 
     const newBiome = biome(7);
 
-    const actual = newBiome.toArray();
+    const actual = newBiome.toArray().map(row => (
+      row.map(cell => (cell ? {alive: false} : null))
+    ));
     const expected = [
       [null          , {alive: false}, null],
       [{alive: false}, {alive: false}, {alive: false}],
@@ -100,7 +102,9 @@ export default function testBiome() {
 
     const newBiome = biome(9);
 
-    const actual = newBiome.toArray();
+    const actual = newBiome.toArray().map(row => (
+      row.map(cell => (cell ? {alive: false} : null))
+    ));
     const expected = [
       [{alive: false}, {alive: false}, {alive: false}],
       [{alive: false}, {alive: false}, {alive: false}],
