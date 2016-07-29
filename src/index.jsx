@@ -20,30 +20,36 @@ const Cell = (props) => (
   ></td>
 );
 
-// TODO: hook up judgement ticking!
+// TODO: optimize biome.tick()
+// TODO: sub-componentize World
+// TODO: add CSS to make the webpage look nice
+// TODO: figure out how to fix the "cross" shape
 
 const World = React.createClass({
   getInitialState() {
     const myBiome = biome(450);
-    // myBiome.registerArrayUpdateCallback(this.handleStateUpdate);
 
     return {
       biome: myBiome,
       cells: myBiome.toArray(),
     };
   },
-  // handleStateUpdate(cells) {
-  //   this.setState({cells});
-  // },
+  handleClick() {
+    this.state.biome.tick();
+    this.setState({cells: this.state.biome.toArray()});
+  },
   render() {
     return (
-      <table>
-        {this.state.cells.map(row => (
-          <tr>
-            {row.map(cell => (cell ? <Cell alive={cell.alive} /> : <td style={{backgroundColor: 'grey', border: '1px black solid'}}></td>) )}
-          </tr>
-        ))}
-      </table>
+      <div>
+        <table>
+          {this.state.cells.map(row => (
+            <tr>
+              {row.map(cell => (cell ? <Cell alive={cell.alive} /> : <td style={{backgroundColor: 'grey', border: '1px black solid'}}></td>) )}
+            </tr>
+          ))}
+        </table>
+        <button onClick={this.handleClick}>Tick</button>
+      </div>
     );
   }
 });

@@ -79,6 +79,7 @@ const passesAnyRule = (...args) => (passesRule2(...args) || passesRule4(...args)
 
 export function cell() {
   let _alive = (Math.random() >= 0.5) ? true : false;
+  let _nextLife = false;
   const _neighbors = {
     north: null,
     northEast: null,
@@ -331,8 +332,12 @@ export function cell() {
     create: create,
     setNeighbors: setNeighbors,
     getNeighbors() { return Object.assign({}, _neighbors); },
+    prepareForJudgement() {
+      _nextLife = willLive();
+      return this;
+    },
     judge() {
-      _alive = willLive();
+      _alive = _nextLife;
       return this;
     },
     linkNeighbors: linkNeighbors,

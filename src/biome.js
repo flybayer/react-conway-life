@@ -114,6 +114,15 @@ export default function biome(cellsToCreate) {
     getRootCell() { return _rootCell; },
     getTotalCreated() { return _totalCreated; },
     getCellObjectArray() { return _cellObjectArray; },
+    tick() {
+      _cellObjectArray.map(row => (
+        row.map(cell => (cell ? cell.prepareForJudgement() : null) )
+      ));
+      _cellObjectArray.map(row => (
+        row.map(cell => (cell ? cell.judge() : null) )
+      ));
+      return this;
+    },
     toArray() {
       return _cellObjectArray.map(row => (
         row.map(cell => (cell ? {alive: cell.isAlive()} : null) )
